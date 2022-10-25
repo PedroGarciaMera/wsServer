@@ -1,4 +1,4 @@
-local C_Player = require 'class/player';
+local C_Player = require 'player';
 local Games = require 'games';
 
 local function pointRectangle(P,R)
