@@ -1,5 +1,5 @@
 local Server = require "wsServer";
-local Board = require "Board";
+local Board = require "board";
 
 math.randomseed( os.time() );
 
