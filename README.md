@@ -1,1 +1,1 @@
-"# wsServer" 
+Servidor WebSocket con Lua.
