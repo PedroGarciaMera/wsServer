@@ -23,8 +23,8 @@ end
 local G = {
 	sel="MrJackPocket";
 	list = {
-		"Jaipur"; "Hive"; "TidesOfTime"; "Pinguinos"; "Tsuro"; "Catan"; "Takenoko"; "Rummikub";
 		"Carcassone"; "Chess"; "MrJackPocket";
+		"Jaipur"; "Hive"; "TidesOfTime"; "Pinguinos"; "Tsuro"; "Catan"; "Takenoko"; "Rummikub";
 	};
 	inits = {};
 }
@@ -40,7 +40,7 @@ G.inits["Carcassone"] = function(B)
 	table.insert(B.boxs,newBox(BoxX, BoxY, W, H, {"back",1}, true))
 	---- Cards
 	-- Points BOARD
-	table.insert(B.cards,newCard(0,w_h,480,330,false,1,false,"front",-1));
+	table.insert(B.cards,newCard(0,640,480,330,false,1,false,"front",-1));
 	-- Tile Cards
 	local nCs={ 4,2,1,3,1,1,2,3,2,3,2,1,2,2,3,3,2,3,3,3,3,4,4,3,3,3,2,2,1 };
 	for i,v in ipairs(nCs) do
@@ -54,7 +54,7 @@ G.inits["Carcassone"] = function(B)
 	local mW,mH = W*0.4,H*0.4; local nMapples = 8;
 	for i=1,B.nPlayers do
 		for j=1,nMapples do
-			table.insert(B.cards,newCard(W*8+j*mW,w_h_2+mH*i,mW,mH,1,30+i,false,"front",i))
+			table.insert(B.cards,newCard(W*8+j*mW,320+mH*i,mW,mH,1,30+i,false,"front",i))
 		end
 	end
 

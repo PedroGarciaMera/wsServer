@@ -63,7 +63,14 @@ B.actions = {
 
 
 
-function B:init() Games.inits[Games.sel](self); self:initBoxs(); end
+function B:init()
+	assert(arg[1],"Need one argument: $ lua init.lua <gameNumber>");
+	local gameNumber = assert( tonumber(arg[1]), "Couldn't read gameNumber." );
+	assert(gameNumber>=1 and gameNumber<=#Games.list, "gameNumber not exist.");
+	local game = Games.list[gameNumber];
+	Games.inits[game](self); -- Games.inits[Games.sel](self);
+	self:initBoxs();
+end
 function B:initBoxs()
 	for _,Box in ipairs(self.boxs) do
 		for i,Card in ipairs(self.cards) do
