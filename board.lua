@@ -18,9 +18,10 @@ local changeSide = {front="back",back="front"}
 
 
 local B = {
-  pjs = {}; cards = {}; boxs = {};
+	-- Shared
+	pjs = {}; cards = {}; boxs = {};
 	-- Game CFG
-	allowRot = false; allowInvi = false; nPlayers = 0; turns = { first=true, c=0, free={}, n=1, }; isTiled = false;
+	allowRot = false; allowInvi = false; isTiled = false; turns = { free={}, n=1, c=0, first=true };
 };
 
 B.actions = {
@@ -28,7 +29,7 @@ B.actions = {
 	function(Self,clientID,WS)
 		if Self.pjs[clientID].mouse.card then Self:placeCard(clientID,WS) else Self:pickCard(clientID,WS) end
 	end,
-  -- Rotate or flip card
+  	-- Rotate or flip card
 	function(Self,clientID,WS)
 		local pj = Self.pjs[clientID]; local mC=Self.cards[pj.mouse.card];
 
@@ -75,9 +76,11 @@ end
 function B:newPlayer(clientID)
 	local Turn; if next(self.turns.free) then Turn=table.remove(self.turns.free,1) else Turn=0 end
 
-  if self.pjs[clientID] then self.pjs[clientID]:defaults(Turn);
+	if self.pjs[clientID] then self.pjs[clientID]:defaults(Turn);
 	else self.pjs[clientID] = C_Player.new(Turn);
 	end
+
+	return Turn;
 end
 
 function B:updateMousePos(clientID,Mpos)
@@ -100,21 +103,19 @@ function B:nextTurn(clientID)
 	local pj = self.pjs[clientID];
 
 	if self.turns.first then
-		self.turns.first = nil;
-
-		for _,p in pairs(self.pjs) do self.turns.c = p.turn; return true; end
+		self.turns.first = false; self.turns.c = math.random(self.turns.n); return true;
 	elseif self.turns.c == pj.turn then
-		local usingT = {};
-		for _,p in pairs(self.pjs) do table.insert(usingT,p.turn) end
-		table.sort(usingT);
-
-		self.turns.n, self.turns.c = next(usingT,self.turns.n);
-		if not self.turns.c then self.turns.n, self.turns.c = next(usingT) end
-
+		self.turns.c = self.turns.c + 1;
+		if self.turns.c>self.turns.n then self.turns.c = 1 end
 		return true;
 	end
 
 	return false;
+end
+
+function B:setNPlayer(N)
+	self.turns = { free={}, n=N, c=0, first=true };
+	for i=1,N do table.insert(self.turns.free,i) end;
 end
 
 -- Actions
@@ -184,8 +185,8 @@ function B:inviFlip(clientID,WS)
 	-- Try invi flip board card
 	for i,card in ipairs(self.cards) do
 		if pointRectangle(pj.mouse,card) and isCardOwner(card,pj) and card.side=="back" and not card.invi then
-			card.invi = clientID; card.side = "front";
-			WS:sendAll({ name="sideBoardCard"; data={ side=card.side, invi=clientID, index=i } });
+			card.invi = pj.turn; card.side = "front";
+			WS:sendAll({ name="sideBoardCard"; data={ side=card.side, invi=card.invi, index=i } });
 			return;
 		end
 	end

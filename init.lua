@@ -20,12 +20,13 @@ math.randomseed( os.time() );
 
 -- Player Join
 Server:addEvent("open", function(clientID)
-	Board:newPlayer(clientID);
+	local turn = Board:newPlayer(clientID);
 
 	local D = { pjs={}; cards=Board.cards; turn=Board.turns.c; }
 	for k,p in pairs(Board.pjs) do table.insert(D.pjs,{id=k,turn=p.turn}) end
 	Server:sendAll({name="gameStatus", data=D});
 	Server:send(clientID,{name="setMyID", data=clientID});
+	Server:send(clientID,{name="setMyTurn", data=turn});
 end)
 
 -- Player Leave
