@@ -4,7 +4,7 @@ local http_websocket = require "http.websocket";
 local json = require "rxi_json";  -- https://github.com/rxi/json.lua
 
 
-local wsServer = { events={}, clientI=1, clients={} };
+local wsServer = { events={}, clientI=1, clients={}, gameName="None" };
 
 function wsServer:addEvent(name,exe) self.events[name] = exe end
 
@@ -46,7 +46,7 @@ function wsServer:initWS(ws)
 	
 	-- Listen
 	repeat
-		local data, err, errno = ws:receive(); print("receive:",data, err, errno);
+		local data, err, errno = ws:receive();
 		if data then self:exeMessage(clientID, data) end
 	until not data
 	
@@ -55,21 +55,26 @@ function wsServer:initWS(ws)
 	self:exeEmpty(clientID, "close");
 end
 
-function wsServer.noWS(stream)
+function wsServer:sendGameName(stream)
 	local res_headers = http_headers.new();
-	res_headers:append(":status", "200")
-	res_headers:append("content-type", "text/plain")
-	assert(stream:write_chunk("Tu quien eres y que carajo haces aki? Aqui solo pueden entrar los WebSockerinos.\n", true))
+	res_headers:append(":status", "200");
+	res_headers:append("Content-type", "text/plain");
+	res_headers:append("Access-Control-Allow-Origin", "*");
+
+	assert(stream:write_headers(res_headers, false));
+	assert(stream:write_chunk(self.gameName, true));
 end
 
-function wsServer.checkWS(server, stream) -- luacheck: ignore 212
+function wsServer.checkWS(server, stream)
 	local request_headers = assert(stream:get_headers());
-	local ws, err, nose = http_websocket.new_from_stream(stream, request_headers); print("new_from_stream:",ws,err,nose);
+	local ws, err, nose = http_websocket.new_from_stream(stream, request_headers);
 	
-	if ws then wsServer:initWS(ws) else wsServer.noWS(stream) end
+	if ws then wsServer:initWS(ws) else wsServer:sendGameName(stream) end
 end
 
-function wsServer:init()
+function wsServer:init(gameName)
+	wsServer.gameName = gameName;
+
 	wsServer.S = assert(http_server.listen {
 		host = "0.0.0.0";
 		port = 22122;

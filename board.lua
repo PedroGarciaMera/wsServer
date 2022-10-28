@@ -63,14 +63,7 @@ B.actions = {
 
 
 
-function B:init()
-	assert(arg[1],"Need one argument: $ lua init.lua <gameNumber>");
-	local gameNumber = assert( tonumber(arg[1]), "Couldn't read gameNumber." );
-	assert(gameNumber>=1 and gameNumber<=#Games.list, "gameNumber not exist.");
-	local game = Games.list[gameNumber];
-	Games.inits[game](self); -- Games.inits[Games.sel](self);
-	self:initBoxs();
-end
+function B:init(gameName) Games[gameName](self); self:initBoxs(); end
 function B:initBoxs()
 	for _,Box in ipairs(self.boxs) do
 		for i,Card in ipairs(self.cards) do
@@ -131,7 +124,7 @@ function B:pickCard(clientID,WS)
 	-- Pick from Box
 	for i,box in ipairs(self.boxs) do
 		if next(box.cardsI) and pointRectangle(pj.mouse,box) then
-			local CardI = table.remove( box.cardsI, love.math.random(#box.cardsI) );
+			local CardI = table.remove( box.cardsI, math.random(#box.cardsI) );
 			local Card = self.cards[CardI];
 
 			WS:sendAll({ name="card2Mouse"; data={ id=clientID, index=CardI } });
@@ -177,8 +170,8 @@ function B:placeCard(clientID,WS)
 	end
 	-- isTiled ?
 	if Card.tiled and self.isTiled then
-		Card.x = self.isTiled * math.floor((Card.x+Card.w_2)/self.isTiled);
-		Card.y = self.isTiled * math.floor((Card.y+Card.h_2)/self.isTiled);
+		Card.x = self.isTiled * math.floor(Card.x/self.isTiled) + Card.w_2;
+		Card.y = self.isTiled * math.floor(Card.y/self.isTiled) + Card.h_2;
 	end
 	-- Send and empty hand
 	WS:sendAll({ name="card2Board"; data={ id=clientID, index=pj.mouse.card, x=Card.x, y=Card.y, side=Card.side } })

@@ -1,3 +1,18 @@
+local gameList = { "Carcassone", "Chess", "MrJackPocket", "Stratego" };
+
+-- Chech Arg[1]
+if not arg[1] then
+	print("\nUSE $: lua init.lua <gameNumber>\n")
+	for i,v in ipairs(gameList) do print(i..") "..v) end
+	print(" ");
+	return
+end
+
+local gameNumber = assert( tonumber(arg[1]), "Couldn't read gameNumber." );
+assert(gameNumber>=1 and gameNumber<=#gameList, "game "..gameNumber.." not exist.");
+local gameName = gameList[gameNumber];
+
+-- START SERVER
 local Server = require "wsServer";
 local Board = require "board";
 
@@ -46,5 +61,5 @@ Server:addEvent("nextTurn", function(clientID)
 end)
 
 
-Board:init();
-Server:init(); 
+Board:init(gameName);
+Server:init(gameName); 

@@ -20,16 +20,9 @@ local function newBox(X,Y,W,H,Type,Random)
 end
 
 
-local G = {
-	sel="MrJackPocket";
-	list = {
-		"Carcassone"; "Chess"; "MrJackPocket";
-		"Jaipur"; "Hive"; "TidesOfTime"; "Pinguinos"; "Tsuro"; "Catan"; "Takenoko"; "Rummikub";
-	};
-	inits = {};
-}
+local G = { }
 
-G.inits["Carcassone"] = function(B)
+G["Carcassone"] = function(B)
 	-- Settings
 	B.allowRots = 4; B.isTiled = 100;
 	B.nPlayers = 5; for i=1,B.nPlayers do table.insert(B.turns.free,i) end;
@@ -63,7 +56,7 @@ G.inits["Carcassone"] = function(B)
 	print("Carcassone Board Server Ready")
 end
 
-G.inits["Chess"] = function(B)
+G["Chess"] = function(B)
 	B.isTiled = 70;
 	B.nPlayers = 2; for i=1,B.nPlayers do table.insert(B.turns.free,i) end;
 
@@ -105,7 +98,7 @@ G.inits["Chess"] = function(B)
 	print("Chess Board Server Ready")
 end
 
-G.inits["MrJackPocket"] = function(B)
+G["MrJackPocket"] = function(B)
 	-- Settings
 	B.allowRots = 4; B.allowInvi = true;
 	B.nPlayers = 2; for i=1,B.nPlayers do table.insert(B.turns.free,i) end;
@@ -157,6 +150,133 @@ G.inits["MrJackPocket"] = function(B)
 
 
 	print("MrJackPocket Board Server Ready")
+end
+
+G["Stratego"] = function(B)
+	-- Settings
+	B.isTiled = 90; B.allowInvi = true;
+	B.nPlayers = 2; for i=1,B.nPlayers do table.insert(B.turns.free,i) end;
+	
+	local p1y, p2y = B.isTiled, B.isTiled*10;
+	local p1c = {}; local p2c = {};
+	
+	local bSize = B.isTiled*10; local bY = B.isTiled*5; local bX = B.isTiled*9;
+	-- Board
+	table.insert(B.cards,newCard(bX,bY,bSize,bSize,false,1,false,"front",-1));
+	
+	-- Bombs
+	for i=1,6 do table.insert(p1c,2); table.insert(p2c,3); end
+	-- Spy
+	table.insert(p1c,4); table.insert(p2c,5);
+	-- Scout
+	for i=1,8 do table.insert(p1c,6); table.insert(p2c,7); end
+	-- Miners
+	for i=1,5 do table.insert(p1c,8); table.insert(p2c,9); end
+	-- Sargeants
+	for i=1,4 do table.insert(p1c,10); table.insert(p2c,11); end
+	-- Lieutenants
+	for i=1,4 do table.insert(p1c,12); table.insert(p2c,13); end
+	-- Capitans
+	for i=1,4 do table.insert(p1c,14); table.insert(p2c,15); end
+	
+	
+	local cardN; local cSize_2 = B.isTiled/2; local rx,cy;
+	-- Piezes P1
+	cy = cSize_2;
+	for r=1,5 do
+		rx = cSize_2;
+		for c=1,4 do
+			cardN = table.remove(p1c,math.random(#p1c));
+			table.insert(B.cards,newCard(rx,cy,B.isTiled,B.isTiled,false,cardN,1,"front",1,false,false,true));
+			rx = rx + B.isTiled;
+		end
+		cy = cy + B.isTiled;
+	end	
+	
+	cy = cSize_2;
+	for r=1,3 do
+		rx = cSize_2 + B.isTiled*14;
+		for c=1,4 do
+			cardN = table.remove(p1c,math.random(#p1c));
+			table.insert(B.cards,newCard(rx,cy,B.isTiled,B.isTiled,false,cardN,1,"front",1,false,false,true));
+			rx = rx + B.isTiled;
+		end
+		cy = cy + B.isTiled;
+	end	
+	-- Piezes P2
+	cy = cSize_2 + B.isTiled*5;
+	for r=1,5 do
+		rx = cSize_2;
+		for c=1,4 do
+			cardN = table.remove(p2c,math.random(#p2c));
+			table.insert(B.cards,newCard(rx,cy,B.isTiled,B.isTiled,false,cardN,2,"front",2,false,false,true));
+			rx = rx + B.isTiled;
+		end
+		cy = cy + B.isTiled;
+	end
+	
+	-- for i=1,4 do
+		-- cardN = table.remove(p1c,math.random(#p1c)); c = B.isTiled*(i-1)+cSize_2;
+		-- table.insert(B.cards,newCard(c,r,B.isTiled,B.isTiled,false,cardN,1,"front",1,false,false,true));
+	-- end
+	-- for i=1,4 do
+		-- cardN = table.remove(p1c,math.random(#p1c)); r = cSize_2; c = B.isTiled*(i-1)+cSize_2;
+		-- table.insert(B.cards,newCard(c,r,B.isTiled,B.isTiled,false,cardN,1,"front",1,false,false,true));
+	-- end
+	
+	
+	-- -- Bombs
+	-- for i=1,6 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,2,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,3,2,"front",2,false,false,true));
+	-- end
+	-- -- Spy
+	-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,4,1,"front",1,false,false,true));
+	-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,5,2,"front",2,false,false,true));
+	-- -- Scout
+	-- for i=1,8 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,6,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,7,2,"front",2,false,false,true));
+	-- end
+	-- -- Miners
+	-- for i=1,5 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,8,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,9,2,"front",2,false,false,true));
+	-- end
+	-- -- Sargeants
+	-- for i=1,4 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,10,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,11,2,"front",2,false,false,true));
+	-- end
+	-- -- Lieutenants
+	-- for i=1,4 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,12,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,13,2,"front",2,false,false,true));
+	-- end
+	-- -- Capitans
+	-- for i=1,4 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,14,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,15,2,"front",2,false,false,true));
+	-- end
+	-- -- Majors
+	-- for i=1,3 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,16,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,17,2,"front",2,false,false,true));
+	-- end
+	-- -- Colonels
+	-- for i=1,2 do
+		-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,18,1,"front",1,false,false,true));
+		-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,19,2,"front",2,false,false,true));
+	-- end
+	-- -- Generals
+	-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,20,1,"front",1,false,false,true));
+	-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,21,2,"front",2,false,false,true));
+	-- -- Marchals
+	-- table.insert(B.cards,newCard(B.isTiled,p1y,B.isTiled,B.isTiled,false,22,1,"front",1,false,false,true));
+	-- table.insert(B.cards,newCard(B.isTiled,p2y,B.isTiled,B.isTiled,false,23,2,"front",2,false,false,true));
+
+
+	print("Stratego Board Server Ready")
 end
 
 
